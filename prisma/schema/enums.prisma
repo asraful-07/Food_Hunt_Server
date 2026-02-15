@@ -1,0 +1,18 @@
+enum Roles {
+  ADMIN
+  CUSTOMER
+  PROVIDER
+}
+
+enum UserStatus {
+  ACTIVATE
+  SUSPEND
+}
+
+enum OrderStatus {
+  PLACED
+  PREPARING
+  CANCELLED
+  READY 
+  DELIVERED
+}

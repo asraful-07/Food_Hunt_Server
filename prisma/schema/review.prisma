@@ -1,0 +1,20 @@
+model Review {
+  id         String @id @default(uuid())
+  mealId     String
+  customerId String
+
+  rating     Int
+  comment    String?
+  isDeleted  Boolean @default(false)
+
+  meal       Meal @relation(fields: [mealId], references: [id])
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([mealId])
+  @@index([isDeleted], name: "idx_meal_isDeleted")
+  @@map("review")
+}

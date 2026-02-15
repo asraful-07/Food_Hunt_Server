@@ -1,0 +1,15 @@
+model Cart {
+  id         String   @id @default(uuid())
+  customerId String   @unique
+  isDeleted  Boolean  @default(false)
+
+  customer   Customer     @relation(fields: [customerId], references: [id])
+  items      CartItem[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([customerId])
+  @@index([isDeleted], name: "idx_cart_isDeleted")
+  @@map("cart")
+}
