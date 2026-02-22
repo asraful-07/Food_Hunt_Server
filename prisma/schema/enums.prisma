@@ -16,3 +16,8 @@ enum OrderStatus {
   READY 
   DELIVERED
 }
+
+enum Gender {
+  MALE
+  FEMALE
+}

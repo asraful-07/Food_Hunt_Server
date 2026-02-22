@@ -2,7 +2,7 @@ model Wish {
   id         String   @id @default(uuid())
   customerId String   @unique
   isDeleted  Boolean  @default(false)
-
+  deletedAt  DateTime?
   customer   Customer     @relation(fields: [customerId], references: [id])
   items      WishItem[]
 

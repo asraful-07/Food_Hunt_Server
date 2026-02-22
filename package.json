@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch --env-file=.env ./src/server.ts"
+    "dev": "tsx watch --env-file=.env ./src/server.ts",
+    "seed:Admin": "npx tsx src/app/utils/seedAdmin.ts"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,9 @@
   },
   "homepage": "https://github.com/asraful-07/Food_Hunt_Server#readme",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.0.0",
     "@types/node": "^25.2.3",
     "@types/pg": "^8.16.0",
     "cors": "^2.8.6",
@@ -32,7 +35,14 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.4.0",
     "@prisma/client": "^7.4.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/jsonwebtoken": "^9.0.10",
     "better-auth": "^1.4.18",
+    "cloudinary": "^2.9.0",
+    "cookie-parser": "^1.4.7",
+    "http-status": "^2.1.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
     "pg": "^8.18.0",
     "tsx": "^4.21.0"
   }

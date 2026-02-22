@@ -6,7 +6,7 @@ model Review {
   rating     Int
   comment    String?
   isDeleted  Boolean @default(false)
-
+  deletedAt  DateTime?
   meal       Meal @relation(fields: [mealId], references: [id])
   customer   Customer @relation(fields: [customerId], references: [id])
 

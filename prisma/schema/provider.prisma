@@ -1,0 +1,26 @@
+model Provider {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+
+  name            String
+  email           String    @unique
+  restaurantName  String    @unique
+  profilePhoto    String?
+  contactNumber   String?
+  address         String?
+  isOpen          Boolean  @default(true)
+  isDeleted       Boolean  @default(false)
+  deletedAt       DateTime?
+  gender          Gender
+  averageRating   Float  @default(0.0)
+
+  user            User @relation(fields: [userId], references: [id]) 
+  providerProfile ProviderProfile?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([isDeleted], name: "idx_provider_isDeleted")
+  @@map("provider")
+}

@@ -1,7 +1,8 @@
 model Customer {
   id            String   @id @default(uuid())
   userId        String   @unique
-
+  name          String
+  email         String    @unique
   profileImage  String?
   contactNumber String?
   address       String?

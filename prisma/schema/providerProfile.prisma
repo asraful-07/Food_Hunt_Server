@@ -1,23 +1,24 @@
 model ProviderProfile {
-  id             String   @id @default(uuid())
-  userId         String   @unique
+  id                 String   @id @default(uuid())
+  providerId         String   @unique
 
-  restaurantName String
-  image           String
-  description     String?
-  address         String
-  phone           String
-  isOpen          Boolean  @default(true)
-  isDeleted       Boolean  @default(false)
+  restaurantName     String
+  image              String
+  description        String?
+  restaurantAddress  String
+  phoneNumber        String
+  isOpen             Boolean  @default(true)
+  isDeleted          Boolean  @default(false)
+  deletedAt          DateTime?
 
-  user            User     @relation(fields: [userId], references: [id])
+  provider        Provider     @relation(fields: [providerId], references: [id])
   meals           Meal[]
   orders          Order[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  @@index([userId])
+  @@index([providerId])
   @@index([isDeleted], name: "idx_providerProfile_isDeleted")
-  @@map("providerProfile")
+  @@map("provider_Profile")
 }
