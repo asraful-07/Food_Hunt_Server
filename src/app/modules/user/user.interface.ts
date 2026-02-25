@@ -5,7 +5,6 @@ export interface ICreateProviderProfilePayload {
   provider: {
     name: string;
     email: string;
-    restaurantName: string;
     profilePhoto: string;
     address: string;
     contactNumber: string;
@@ -14,6 +13,7 @@ export interface ICreateProviderProfilePayload {
 }
 
 export interface ICreateRestaurantProfilePayload {
+  email: string;
   restaurantName: string;
   image: string;
   description?: string;

@@ -16,6 +16,7 @@ const addToCart = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 const myCart = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const result = await cartService.myCart(user);

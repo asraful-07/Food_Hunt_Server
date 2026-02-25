@@ -3,6 +3,8 @@ import { IndexRoutes } from "./app/routes";
 import cookieParser from "cookie-parser";
 import { envVars } from "./app/config/env";
 import cors from "cors";
+import { auth } from "./app/lib/auth";
+import { toNodeHandler } from "better-auth/node";
 
 const app = express();
 app.use(
@@ -19,6 +21,8 @@ app.use(
   }),
 );
 
+app.use("/api/auth", toNodeHandler(auth));
+
 // Enable URL-encoded form data parsing
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,8 +31,9 @@ app.use(cookieParser());
 
 //* Routes
 app.use("/api/v2", IndexRoutes);
+
 app.get("/", (req, res) => {
-  res.json("Food Hunt Backend Server");
+  res.send("Food Hunt Backend Server");
 });
 
 export default app;
