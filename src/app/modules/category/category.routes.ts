@@ -14,7 +14,7 @@ const router = Router();
 router.post("/", checkAuth(Roles.ADMIN), CreateCategoryController);
 router.get("/", GetsCategoryController);
 router.get("/:id", GetCategoryController);
-router.put("/:id", UpdateCategoryController);
-router.delete("/:id", SoftDeleteCategoryController);
+router.put("/:id", checkAuth(Roles.ADMIN), UpdateCategoryController);
+router.delete("/:id", checkAuth(Roles.ADMIN), SoftDeleteCategoryController);
 
 export const categoryRoutes = router;
