@@ -1,7 +1,7 @@
 import status from "http-status";
 import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
-import { ICreateMealPayload } from "./meal.interface";
+import { ICreateMealPayload, IUpdateMealPayload } from "./meal.interface";
 import { IRequestUser } from "../../interface/requestUser.interface";
 
 const createMeal = async (user: IRequestUser, payload: ICreateMealPayload) => {
@@ -42,11 +42,134 @@ const createMeal = async (user: IRequestUser, payload: ICreateMealPayload) => {
 };
 
 const getAllMeal = async () => {
-  const result = await prisma.meal.findMany();
+  const result = await prisma.meal.findMany({
+    include: {
+      category: true,
+      provider: true,
+    },
+  });
+  return result;
+};
+
+const getMyMeal = async (user: IRequestUser) => {
+  const provider = await prisma.provider.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const providerProfile = await prisma.providerProfile.findUniqueOrThrow({
+    where: {
+      providerId: provider.id,
+    },
+  });
+
+  if (provider.email !== providerProfile.email) {
+    throw new AppError(status.BAD_REQUEST, "Do not match email");
+  }
+
+  const result = await prisma.meal.findMany({
+    where: {
+      providerId: providerProfile.id,
+      isDeleted: false,
+    },
+    include: {
+      category: true,
+      provider: true,
+    },
+  });
+
+  return result;
+};
+
+const getMeal = async (mealId: string) => {
+  const mealExist = await prisma.meal.findUniqueOrThrow({
+    where: {
+      id: mealId,
+    },
+  });
+
+  const result = await prisma.meal.findUnique({
+    where: {
+      id: mealExist.id,
+    },
+    include: {
+      category: true,
+      provider: true,
+    },
+  });
+  return result;
+};
+
+const updateMeal = async (
+  mealId: string,
+  user: IRequestUser,
+  payload: IUpdateMealPayload,
+) => {
+  const provider = await prisma.provider.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const providerProfile = await prisma.providerProfile.findUniqueOrThrow({
+    where: {
+      providerId: provider.id,
+    },
+  });
+
+  if (provider.email !== providerProfile.email) {
+    throw new AppError(status.BAD_REQUEST, "Do not match email");
+  }
+
+  const result = await prisma.meal.update({
+    where: {
+      id: mealId,
+    },
+    data: {
+      providerId: providerProfile.id,
+      ...payload,
+    },
+  });
+
+  return result;
+};
+
+const softDeleteMeal = async (id: string, user: IRequestUser) => {
+  const provider = await prisma.provider.findUniqueOrThrow({
+    where: {
+      email: user.email,
+    },
+  });
+
+  const providerProfile = await prisma.providerProfile.findUniqueOrThrow({
+    where: {
+      providerId: provider.id,
+    },
+  });
+
+  if (provider.email !== providerProfile.email) {
+    throw new AppError(status.BAD_REQUEST, "Do not match email");
+  }
+
+  const result = await prisma.meal.update({
+    where: {
+      id: id,
+    },
+    data: {
+      isDeleted: true,
+      deletedAt: new Date(),
+    },
+  });
+
   return result;
 };
 
 export const mealService = {
   createMeal,
   getAllMeal,
+  getMeal,
+  getMyMeal,
+  updateMeal,
+  softDeleteMeal,
 };

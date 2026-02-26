@@ -29,7 +29,64 @@ const getAllMeal = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyMeal = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+
+  const meal = await mealService.getMyMeal(user);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Meal fetch successfully",
+    data: meal,
+  });
+});
+
+const getMeal = catchAsync(async (req: Request, res: Response) => {
+  const meal = await mealService.getMeal(req.params.is as string);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Meal fetch successfully",
+    data: meal,
+  });
+});
+
+const updateMeal = catchAsync(async (req: Request, res: Response) => {
+  const payload = req.body;
+  const user = req.user;
+
+  const meal = await mealService.updateMeal(
+    req.params.id as string,
+    user,
+    payload,
+  );
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Updated meal successfully",
+    data: meal,
+  });
+});
+
+const softDeleteMeal = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user;
+  await mealService.softDeleteMeal(req.params.is as string, user);
+
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Meal Deleted successfully",
+  });
+});
+
 export const mealController = {
   createMeal,
   getAllMeal,
+  getMeal,
+  getMyMeal,
+  updateMeal,
+  softDeleteMeal,
 };
