@@ -12,7 +12,6 @@ export interface ILoginCustomerPayload {
 }
 
 export interface IChangeUserStatusPayload {
-  userId: string;
   userStatus: UserStatus;
 }
 

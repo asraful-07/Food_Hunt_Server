@@ -89,13 +89,20 @@ export const GetMeController = catchAsync(
 
 export const ChangeActivateController = catchAsync(
   async (req: Request, res: Response) => {
-    const user = req.user;
+    const admin = req.user;
+    const userId = req.params.id;
     const payload = req.body;
-    const result = await ChangeActivateService(user, payload);
+
+    const result = await ChangeActivateService(
+      admin,
+      userId as string,
+      payload,
+    );
+
     sendResponse(res, {
       httpStatusCode: status.OK,
       success: true,
-      message: "Fetch all user successfully",
+      message: "User status updated successfully",
       data: result,
     });
   },
