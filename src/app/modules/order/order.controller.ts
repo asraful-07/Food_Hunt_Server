@@ -48,6 +48,16 @@ const getsAllOrders = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSingleOrder = catchAsync(async (req: Request, res: Response) => {
+  const result = await OrderService.getSingleOrder(req.params.id as string);
+  sendResponse(res, {
+    httpStatusCode: status.OK,
+    success: true,
+    message: "Meal fetch successfully",
+    data: result,
+  });
+});
+
 const updateOrderStatus = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
   const user = req.user;
@@ -85,6 +95,7 @@ export const OrderController = {
   getMyOrders,
   getProviderOrders,
   getsAllOrders,
+  getSingleOrder,
   updateOrderStatus,
   updateCustomerOrderStatus,
 };

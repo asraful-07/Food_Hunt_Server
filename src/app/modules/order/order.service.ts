@@ -180,7 +180,36 @@ const getProviderOrders = async (user: IRequestUser) => {
 };
 
 const getsAllOrders = async () => {
-  const result = await prisma.order.findMany();
+  const result = await prisma.order.findMany({
+    include: {
+      customer: true,
+      items: {
+        include: {
+          meal: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+  return result;
+};
+
+const getSingleOrder = async (id: string) => {
+  const result = await prisma.order.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      provider: true,
+      items: {
+        include: {
+          meal: true,
+        },
+      },
+    },
+  });
   return result;
 };
 
@@ -216,13 +245,6 @@ const updateOrderStatus = async (
   if (!order) {
     throw new AppError(status.NOT_FOUND, "Order not found");
   }
-
-  // if (order.items.meal.providerId !== providerExist.id) {
-  //   throw new AppError(
-  //     status.FORBIDDEN,
-  //     "You can update only your own meal orders",
-  //   );
-  // }
 
   const validTransitions: Record<string, string> = {
     PLACED: "PREPARING",
@@ -288,6 +310,7 @@ export const OrderService = {
   getMyOrders,
   getProviderOrders,
   getsAllOrders,
+  getSingleOrder,
   updateOrderStatus,
   updateCustomerOrderStatus,
 };

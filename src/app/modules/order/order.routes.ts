@@ -17,6 +17,11 @@ router.get(
   checkAuth(Roles.ADMIN),
   OrderController.getsAllOrders,
 );
+router.get(
+  "/single/:id",
+  checkAuth(Roles.ADMIN, Roles.CUSTOMER, Roles.PROVIDER),
+  OrderController.getSingleOrder,
+);
 router.patch(
   "/:id",
   checkAuth(Roles.PROVIDER),
