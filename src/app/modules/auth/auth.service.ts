@@ -140,12 +140,13 @@ export const GetMeService = async (user: IRequestUser) => {
 };
 
 export const ChangeActivateService = async (
-  user: IRequestUser,
+  admin: IRequestUser,
+  userId: string,
   payload: IChangeUserStatusPayload,
 ) => {
   const adminExist = await prisma.user.findUniqueOrThrow({
     where: {
-      email: user.email,
+      email: admin.email,
     },
   });
 
@@ -158,7 +159,7 @@ export const ChangeActivateService = async (
 
   const targetUser = await prisma.user.findUniqueOrThrow({
     where: {
-      id: payload.userId,
+      id: userId,
     },
   });
 
@@ -168,7 +169,7 @@ export const ChangeActivateService = async (
 
   const updatedUser = await prisma.user.update({
     where: {
-      id: payload.userId,
+      id: userId,
     },
     data: {
       status: payload.userStatus,
@@ -183,23 +184,47 @@ export const UpdateProfileService = async (
   user: IRequestUser,
   payload: IUpdateCustomerPayload,
 ) => {
-  const customer = await prisma.customer.findUnique({
-    where: {
-      email: user.email,
-    },
-  });
-
-  if (!customer) {
-    throw new AppError(status.BAD_REQUEST, "You not real user");
+  // 1️⃣ Check logged in user is same as updating user
+  if (id !== user.userId) {
+    throw new AppError(status.FORBIDDEN, "You cannot update other profile");
   }
 
-  const result = await prisma.customer.update({
-    where: {
-      id: id,
-    },
-    data: {
-      ...payload,
-    },
+  // 2️⃣ Find user with role
+  const existingUser = await prisma.user.findUnique({
+    where: { id },
+    include: { customer: true },
   });
+
+  if (!existingUser) {
+    throw new AppError(status.NOT_FOUND, "User not found");
+  }
+
+  if (existingUser.role !== "CUSTOMER") {
+    throw new AppError(status.BAD_REQUEST, "This is not a customer");
+  }
+
+  // 3️⃣ Transaction update (Best Practice)
+  const result = await prisma.$transaction(async (tx) => {
+    // Update User table
+    await tx.user.update({
+      where: { id },
+      data: {
+        name: payload.name,
+      },
+    });
+
+    // Update Customer table
+    const updatedCustomer = await tx.customer.update({
+      where: { userId: id },
+      data: {
+        contactNumber: payload.contactNumber,
+        address: payload.address,
+        profileImage: payload.profileImage,
+      },
+    });
+
+    return updatedCustomer;
+  });
+
   return result;
 };

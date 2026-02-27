@@ -43,7 +43,7 @@ const getMyMeal = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMeal = catchAsync(async (req: Request, res: Response) => {
-  const meal = await mealService.getMeal(req.params.is as string);
+  const meal = await mealService.getMeal(req.params.id as string);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
@@ -73,7 +73,7 @@ const updateMeal = catchAsync(async (req: Request, res: Response) => {
 
 const softDeleteMeal = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
-  await mealService.softDeleteMeal(req.params.is as string, user);
+  await mealService.softDeleteMeal(req.params.id as string, user);
 
   sendResponse(res, {
     httpStatusCode: status.OK,

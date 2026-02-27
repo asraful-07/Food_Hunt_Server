@@ -64,10 +64,6 @@ const getMyMeal = async (user: IRequestUser) => {
     },
   });
 
-  if (provider.email !== providerProfile.email) {
-    throw new AppError(status.BAD_REQUEST, "Do not match email");
-  }
-
   const result = await prisma.meal.findMany({
     where: {
       providerId: providerProfile.id,
@@ -96,6 +92,7 @@ const getMeal = async (mealId: string) => {
     include: {
       category: true,
       provider: true,
+      reviews: true,
     },
   });
   return result;
