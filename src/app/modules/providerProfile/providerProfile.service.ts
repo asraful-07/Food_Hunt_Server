@@ -14,9 +14,10 @@ const getAllProviderProfile = async () => {
 };
 
 const getSingleProviderProfile = async (id: string) => {
-  const providerProfile = await prisma.providerProfile.findUnique({
+  const providerProfile = await prisma.providerProfile.findFirst({
     where: {
-      id,
+      id: id,
+      isDeleted: false,
     },
     include: {
       meals: true,
@@ -47,8 +48,8 @@ const updateProviderProfile = async (
     },
   });
 
-  if (provider.email !== providerProfile.email) {
-    throw new AppError(status.BAD_REQUEST, "Your not real provider");
+  if (!providerProfile) {
+    throw new AppError(status.BAD_REQUEST, "Provider not real user");
   }
 
   const result = await prisma.providerProfile.update({
