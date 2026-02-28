@@ -3,6 +3,7 @@ import { catchAsync } from "../../shared/catchAsync";
 import { mealService } from "./meal.service";
 import { sendResponse } from "../../shared/sendResponse";
 import status from "http-status";
+import { IQueryParams } from "../../interface/query.interface";
 
 const createMeal = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
@@ -19,13 +20,15 @@ const createMeal = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAllMeal = catchAsync(async (req: Request, res: Response) => {
-  const meal = await mealService.getAllMeal();
+  const query = req.query;
+  const meal = await mealService.getAllMeal(query as IQueryParams);
 
   sendResponse(res, {
     httpStatusCode: status.OK,
     success: true,
     message: "Create meal successfully",
-    data: meal,
+    data: meal.data,
+    meta: meal.meta,
   });
 });
 

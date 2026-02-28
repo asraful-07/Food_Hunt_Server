@@ -5,8 +5,12 @@ import { envVars } from "./app/config/env";
 import cors from "cors";
 import { auth } from "./app/lib/auth";
 import { toNodeHandler } from "better-auth/node";
+import qs from "qs";
 
 const app = express();
+//* first query and filter
+app.set("query parser", (str: string) => qs.parse(str));
+
 app.use(
   cors({
     origin: [

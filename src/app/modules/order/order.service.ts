@@ -16,12 +16,12 @@ const createOrder = async (
 
   return await prisma.$transaction(
     async (tx) => {
-      // 1️⃣ Find Customer
+      //  Find Customer
       const customer = await tx.customer.findFirstOrThrow({
         where: { email: user.email },
       });
 
-      // 2️⃣ Get Cart
+      //  Get Cart
       const cart = await tx.cart.findUnique({
         where: { customerId: customer.id },
         include: {
@@ -35,7 +35,7 @@ const createOrder = async (
         throw new AppError(status.BAD_REQUEST, "Cart is empty");
       }
 
-      // 3️⃣ Validate Stock First (NO DB WRITE YET)
+      //  Validate Stock First (NO DB WRITE YET)
       for (const item of cart.items) {
         if (item.meal.stock < item.quantity) {
           throw new AppError(
@@ -45,7 +45,7 @@ const createOrder = async (
         }
       }
 
-      // 4️⃣ Group Items By Provider
+      // Group Items By Provider
       const groupedByProvider = cart.items.reduce(
         (acc, item) => {
           const providerId = item.meal.providerId;
@@ -58,7 +58,7 @@ const createOrder = async (
 
       const createdOrders: any = [];
 
-      // 5️⃣ Deduct All Stocks in Parallel (Fast)
+      //  Deduct All Stocks in Parallel (Fast)
       await Promise.all(
         cart.items.map((item) =>
           tx.meal.update({
@@ -72,7 +72,7 @@ const createOrder = async (
         ),
       );
 
-      // 6️⃣ Create Orders Provider-wise
+      // Create Orders Provider-wise
       for (const providerId in groupedByProvider) {
         const providerItems = groupedByProvider[providerId];
 
@@ -107,7 +107,7 @@ const createOrder = async (
         createdOrders.push(order);
       }
 
-      // 7️⃣ Clear Cart
+      // Clear Cart
       await tx.cartItem.deleteMany({
         where: { cartId: cart.id },
       });

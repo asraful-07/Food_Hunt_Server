@@ -3,6 +3,14 @@ import AppError from "../../errorHelper/AppError";
 import { prisma } from "../../lib/prisma";
 import { ICreateMealPayload, IUpdateMealPayload } from "./meal.interface";
 import { IRequestUser } from "../../interface/requestUser.interface";
+import { QueryBuilder } from "../../utils/QueryBuilder";
+import { IQueryParams } from "../../interface/query.interface";
+import { Meal, Prisma } from "../../../generated/prisma/client";
+import {
+  mealFilterableFields,
+  mealIncludeConfig,
+  mealSearchableFields,
+} from "./meal.constant";
 
 const createMeal = async (user: IRequestUser, payload: ICreateMealPayload) => {
   const provider = await prisma.provider.findUniqueOrThrow({
@@ -41,13 +49,30 @@ const createMeal = async (user: IRequestUser, payload: ICreateMealPayload) => {
   return result;
 };
 
-const getAllMeal = async () => {
-  const result = await prisma.meal.findMany({
-    include: {
-      category: true,
-      provider: true,
-    },
+const getAllMeal = async (query: IQueryParams) => {
+  const queryBuilder = new QueryBuilder<
+    Meal,
+    Prisma.MealWhereInput,
+    Prisma.MealInclude
+  >(prisma.meal, query, {
+    searchableFields: mealSearchableFields,
+    filterableFields: mealFilterableFields,
   });
+
+  const result = await queryBuilder
+    .search()
+    .filter()
+    .where({ isDeleted: false })
+    .include({
+      provider: true,
+      category: true,
+    })
+    .dynamicInclude(mealIncludeConfig)
+    .paginate()
+    .sort()
+    .fields()
+    .execute();
+
   return result;
 };
 
