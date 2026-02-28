@@ -8,6 +8,7 @@ import { orderRoutes } from "../modules/order/order.routes";
 import { wishRoutes } from "../modules/wish/wish.routes";
 import { providerProfileRoutes } from "../modules/providerProfile/providerProfile.routes";
 import { reviewRoutes } from "../modules/review/review.routes";
+import { statsRoutes } from "../modules/stats/stats.routes";
 
 const router = Router();
 
@@ -20,5 +21,6 @@ router.use("/cart", cartRoutes);
 router.use("/wish", wishRoutes);
 router.use("/order", orderRoutes);
 router.use("/review", reviewRoutes);
+router.use("/stats", statsRoutes);
 
 export const IndexRoutes = router;

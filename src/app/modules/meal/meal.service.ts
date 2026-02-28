@@ -104,15 +104,10 @@ const getMyMeal = async (user: IRequestUser) => {
 };
 
 const getMeal = async (mealId: string) => {
-  const mealExist = await prisma.meal.findUniqueOrThrow({
+  const meal = await prisma.meal.findUniqueOrThrow({
     where: {
       id: mealId,
-    },
-  });
-
-  const result = await prisma.meal.findUnique({
-    where: {
-      id: mealExist.id,
+      isDeleted: false,
     },
     include: {
       category: true,
@@ -120,7 +115,29 @@ const getMeal = async (mealId: string) => {
       reviews: true,
     },
   });
-  return result;
+
+  const relatedMeals = await prisma.meal.findMany({
+    where: {
+      categoryId: meal.categoryId,
+      id: {
+        not: mealId,
+      },
+      isDeleted: false,
+    },
+    include: {
+      category: true,
+      provider: true,
+    },
+    take: 6,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return {
+    meal,
+    relatedMeals,
+  };
 };
 
 const updateMeal = async (
